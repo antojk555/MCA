@@ -10,16 +10,17 @@
 	 @$dap1=$_POST['dap'];
 	 $dap=date('Y-m-d',strtotime($dap1));
 	 
-	
-	/*@$hname='Medicity,Palai';
+/*	
+	@$hname='Medicity,Palai';
 	@$did='101';
 	
 	@$fname='a2';
 	@$opno='38';
     @$phno='9061200734';
-	 @$dap1='2022-7-10';
+	 @$dap1='2022-07-26';
 	 $dap=date('Y-m-d',strtotime($dap1));
-	 */
+	 echo $dap;
+	*/ 
 
 	$co1=mysqli_connect('localhost','root','','hospitals');
 	
@@ -47,22 +48,24 @@ if(mysqli_num_rows($q1) > 0)
 	$at=$tc1['at'];
 	$et=$tc1['endtime'];
 	$var=0;
+	$var1=0;
 	
 	date_default_timezone_set('Asia/Kolkata');
 	$d=date('Y-m-d');
 	$t=date('H:i:s');
 	
 	
-		if($dap == $d && $t > $et)
+		if($dap == $d && $t > $et)//book date == today date and current time > end time ...not continued OP Stoped
 		{
 			$var=1;
 		}
 		#echo $var;
-	
+		
+		
 		
 	if(($c < $op) && ($at!='Full Day Leave'))
 	{
-		if($var==0)
+		if($var1==0)
 		{				
 			
 					$q2=mysqli_query($co,"select count as cu from waitcount where doctid='$did'");
@@ -85,7 +88,7 @@ if(mysqli_num_rows($q1) > 0)
 					$cenvertedTime = date('H:i:s',strtotime('+ '.$mul. 'minutes',strtotime($startTime)));
 					
 						
-					$q3=mysqli_query($co,"SELECT `doctid`, `opno` FROM `doctpatients` WHERE opno='$opno' and doctid='$did'");
+					$q3=mysqli_query($co,"SELECT `doctid`, `opno` FROM `doctpatients` WHERE opno='$opno' and doctid='$did' and bdate='$dap'");
 					if(mysqli_num_rows($q3)>0)
 					{
 						$response['success'] =0; 	
@@ -99,7 +102,7 @@ if(mysqli_num_rows($q1) > 0)
 						
 						if($tib > $startTime)
 						{
-							$r1=mysqli_query($co,"select count(*) as cou from doctpatients where waitlist=0 and doctid='$did'");
+							$r1=mysqli_query($co,"select count(*) as cou from doctpatients where waitlist=0 and doctid='$did' ");
 							$r2=mysqli_fetch_assoc($r1);
 							
 							if ($r2['cou'] == 0)
@@ -156,7 +159,7 @@ if(mysqli_num_rows($q1) > 0)
 		else
 		{
 			$response['success'] =0; 
-			$response['result'] = "No data found!";
+			$response['result'] = "limit exee or absence of doctor";
 			
 			echo json_encode($response);
 
@@ -165,7 +168,7 @@ if(mysqli_num_rows($q1) > 0)
 else
 {
 	$response['success'] =0; 
-	$response['result'] = "No data found!";
+	$response['result'] = "Not Registered Yet";
     
 	echo json_encode($response);
 
